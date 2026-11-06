@@ -1,7 +1,7 @@
 import { Injectable, ConflictException } from '@nestjs/common';
 import { FilmsService } from 'src/films/films.service';
 import { CreateOrderDTO } from './dto/order.dto';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'crypto';
 
 @Injectable()
 export class OrderService {
@@ -23,7 +23,7 @@ export class OrderService {
     const tickets = dto.tickets.map((order) => {
       return {
         ...order,
-        id: uuidv4(),
+        id: randomUUID(),
       };
     });
     return {
