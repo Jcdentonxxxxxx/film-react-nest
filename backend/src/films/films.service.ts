@@ -15,4 +15,13 @@ export class FilmsService {
   async findSchedule(id: string) {
     return this.filmsRepository.findSchedule(id);
   }
+
+  async takeSeat(
+    filmId: string,
+    scheduleId: string,
+    row: number,
+    seat: number,
+  ): Promise<boolean> {
+    return this.filmsRepository.takeSeat(filmId, scheduleId, row, seat);
+  }
 }

@@ -11,6 +11,16 @@ export interface FilmDocument extends Document {
   cover: string;
 }
 
+export interface ScheduleDocument extends Document {
+  id: string;
+  daytime: string;
+  hall: number;
+  rows: number;
+  seats: number;
+  price: number;
+  taken: string[];
+}
+
 const ScheduleSchema = new Schema({
   id: { type: String, required: true },
   daytime: { type: Date, required: true },

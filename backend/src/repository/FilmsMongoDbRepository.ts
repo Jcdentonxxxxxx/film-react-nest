@@ -1,8 +1,17 @@
 import { Inject } from '@nestjs/common';
 import { Mongoose, Model } from 'mongoose';
-import { FilmDTO, FilmListDTO, ScheduleListDTO } from '../films/dto/films.dto';
+import {
+  FilmDTO,
+  FilmListDTO,
+  ScheduleDTO,
+  ScheduleListDTO,
+} from '../films/dto/films.dto';
 import { FilmsRepository } from './FilmsRepository';
-import { FilmSchema, FilmDocument } from './shemas/film.schema';
+import {
+  FilmSchema,
+  FilmDocument,
+  ScheduleDocument,
+} from './shemas/film.schema';
 
 export class FilmsMongoDbRepository implements FilmsRepository {
   private readonly filmModel: Model<any>;
@@ -23,6 +32,19 @@ export class FilmsMongoDbRepository implements FilmsRepository {
       cover: doc.cover,
     };
   }
+
+  private mapSchedule(doc: ScheduleDocument): ScheduleDTO {
+    return {
+      id: doc.id,
+      daytime: doc.daytime,
+      hall: doc.hall,
+      rows: doc.rows,
+      seats: doc.seats,
+      price: doc.price,
+      taken: doc.taken,
+    };
+  }
+
   async findAll(): Promise<FilmListDTO> {
     const films = await this.filmModel.find({});
     const total = await this.filmModel.countDocuments({});
@@ -40,7 +62,21 @@ export class FilmsMongoDbRepository implements FilmsRepository {
 
     return {
       total: doc.schedule.length,
-      items: doc.schedule,
+      items: doc.schedule.map((schedule) => this.mapSchedule(schedule)),
     };
+  }
+
+  async takeSeat(
+    filmId: string,
+    scheduleId: string,
+    row: number,
+    seat: number,
+  ): Promise<boolean> {
+    const result = await this.filmModel.updateOne(
+      { _id: filmId, 'schedule.id': scheduleId },
+      { $addToSet: { 'schedule.$.taken': `${row}:${seat}` } },
+    );
+
+    return result.modifiedCount > 0;
   }
 }
