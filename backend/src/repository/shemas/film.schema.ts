@@ -1,4 +1,4 @@
-import { model, Schema, Document } from 'mongoose';
+import { Schema, Document } from 'mongoose';
 
 export interface FilmDocument extends Document {
   rating: number;
@@ -21,7 +21,7 @@ const ScheduleSchema = new Schema({
   taken: [String],
 });
 
-const FilmSchema = new Schema({
+export const FilmSchema = new Schema({
   rating: {
     type: Number,
     required: true,
@@ -56,5 +56,3 @@ const FilmSchema = new Schema({
   },
   schedule: [ScheduleSchema],
 });
-
-export const Film = model('Film', FilmSchema);
