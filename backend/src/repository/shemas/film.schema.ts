@@ -32,6 +32,11 @@ const ScheduleSchema = new Schema({
 });
 
 export const FilmSchema = new Schema({
+  id: {
+    type: String,
+    required: true,
+    unique: true,
+  },
   rating: {
     type: Number,
     required: true,

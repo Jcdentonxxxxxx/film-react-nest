@@ -1,8 +1,7 @@
-//TODO реализовать DTO для /orders
 import {
   IsArray,
   IsInt,
-  IsMongoId,
+  IsUUID,
   IsString,
   Min,
   ValidateNested,
@@ -12,7 +11,7 @@ import {
 import { Type } from 'class-transformer';
 
 export class TicketDTO {
-  @IsMongoId()
+  @IsUUID()
   film: string;
 
   @IsString()

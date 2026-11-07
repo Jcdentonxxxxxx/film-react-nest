@@ -21,7 +21,7 @@ export class FilmsMongoDbRepository implements FilmsRepository {
 
   private mapFilm(doc: FilmDocument): FilmDTO {
     return {
-      id: doc._id.toString(),
+      id: doc.id,
       rating: doc.rating,
       director: doc.director,
       tags: doc.tags,
@@ -55,8 +55,8 @@ export class FilmsMongoDbRepository implements FilmsRepository {
     };
   }
 
-  async findSchedule(id: string): Promise<ScheduleListDTO> {
-    const doc = await this.filmModel.findById(id);
+  async findSchedule(id: string): Promise<ScheduleListDTO | null> {
+    const doc = await this.filmModel.findOne({ id });
 
     if (!doc) return null;
 
@@ -73,7 +73,7 @@ export class FilmsMongoDbRepository implements FilmsRepository {
     seat: number,
   ): Promise<boolean> {
     const result = await this.filmModel.updateOne(
-      { _id: filmId, 'schedule.id': scheduleId },
+      { id: filmId, 'schedule.id': scheduleId },
       { $addToSet: { 'schedule.$.taken': `${row}:${seat}` } },
     );
 

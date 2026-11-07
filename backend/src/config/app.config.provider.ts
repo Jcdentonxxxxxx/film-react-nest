@@ -12,6 +12,9 @@ export const configProvider = {
         driver: configService.get('DATABASE_DRIVER'),
         url: url,
       },
+      server: {
+        port: Number(configService.get('PORT', 3000)),
+      },
     };
   },
   inject: [ConfigService],
@@ -19,6 +22,11 @@ export const configProvider = {
 
 export interface AppConfig {
   database: AppConfigDatabase;
+  server: AppConfigServer;
+}
+
+export interface AppConfigServer {
+  port: number;
 }
 
 export interface AppConfigDatabase {
