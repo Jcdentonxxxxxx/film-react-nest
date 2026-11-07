@@ -1,4 +1,4 @@
-import { Inject } from '@nestjs/common';
+import { Inject, NotFoundException, ConflictException } from '@nestjs/common';
 import { Mongoose, Model } from 'mongoose';
 import {
   FilmDTO,
@@ -66,17 +66,53 @@ export class FilmsMongoDbRepository implements FilmsRepository {
     };
   }
 
-  async takeSeat(
+  async takeSeats(
+    filmId: string,
+    seatsBySession: Map<string, Set<string>>,
+  ): Promise<void> {
+    const takedSeats = new Map<string, Set<string>>();
+    try {
+      for (const [scheduleId, seats] of seatsBySession) {
+        const result = await this.filmModel.updateOne(
+          { id: filmId, 'schedule.id': scheduleId },
+          { $addToSet: { 'schedule.$.taken': { $each: [...seats] } } },
+        );
+        if (result.modifiedCount === 0) {
+          const sessionExists = await this.sessionExists(filmId, scheduleId);
+          if (!sessionExists) {
+            throw new NotFoundException(`Сеанс ${scheduleId} не найден`);
+          }
+
+          throw new ConflictException(`Места сеанса ${scheduleId} уже заняты`);
+        }
+        takedSeats.set(scheduleId, seats);
+      }
+    } catch (error) {
+      await this.returnSeats(filmId, takedSeats);
+      throw error;
+    }
+  }
+
+  async returnSeats(
+    filmId: string,
+    seatsBySession: Map<string, Set<string>>,
+  ): Promise<void> {
+    for (const [scheduleId, seats] of seatsBySession) {
+      await this.filmModel.updateOne(
+        { id: filmId, 'schedule.id': scheduleId },
+        { $pull: { 'schedule.$.taken': { $in: [...seats] } } },
+      );
+    }
+  }
+
+  private async sessionExists(
     filmId: string,
     scheduleId: string,
-    row: number,
-    seat: number,
   ): Promise<boolean> {
-    const result = await this.filmModel.updateOne(
+    const doc = await this.filmModel.findOne(
       { id: filmId, 'schedule.id': scheduleId },
-      { $addToSet: { 'schedule.$.taken': `${row}:${seat}` } },
+      { _id: 1 },
     );
-
-    return result.modifiedCount > 0;
+    return Boolean(doc);
   }
 }

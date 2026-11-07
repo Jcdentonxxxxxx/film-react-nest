@@ -20,12 +20,17 @@ export class FilmsService {
     return schedule;
   }
 
-  async takeSeat(
+  async takeSeats(
     filmId: string,
-    scheduleId: string,
-    row: number,
-    seat: number,
-  ): Promise<boolean> {
-    return this.filmsRepository.takeSeat(filmId, scheduleId, row, seat);
+    seatsBySession: Map<string, Set<string>>,
+  ): Promise<void> {
+    return this.filmsRepository.takeSeats(filmId, seatsBySession);
+  }
+
+  async returnSeats(
+    filmId: string,
+    seatsBySession: Map<string, Set<string>>,
+  ): Promise<void> {
+    return this.filmsRepository.returnSeats(filmId, seatsBySession);
   }
 }
