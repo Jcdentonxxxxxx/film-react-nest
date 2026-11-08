@@ -13,7 +13,7 @@ export class FilmsService {
   }
 
   async findSchedule(id: string) {
-    const schedule = this.filmsRepository.findSchedule(id);
+    const schedule = await this.filmsRepository.findSchedule(id);
     if (!schedule) {
       throw new NotFoundException(`Фильм с id ${id} не найден`);
     }

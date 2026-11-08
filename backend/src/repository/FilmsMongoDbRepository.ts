@@ -74,7 +74,15 @@ export class FilmsMongoDbRepository implements FilmsRepository {
     try {
       for (const [scheduleId, seats] of seatsBySession) {
         const result = await this.filmModel.updateOne(
-          { id: filmId, 'schedule.id': scheduleId },
+          {
+            id: filmId,
+            schedule: {
+              $elemMatch: {
+                id: scheduleId,
+                taken: { $nin: [...seats] },
+              },
+            },
+          },
           { $addToSet: { 'schedule.$.taken': { $each: [...seats] } } },
         );
         if (result.modifiedCount === 0) {
