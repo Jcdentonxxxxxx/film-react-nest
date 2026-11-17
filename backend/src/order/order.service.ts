@@ -49,18 +49,18 @@ export class OrderService {
       }
     }
 
-    const takedOrder = new Map<string, Map<string, Set<string>>>();
-    try {
-      for (const [filmId, seatsBySession] of order) {
-        await this.filmsService.takeSeats(filmId, seatsBySession);
-        takedOrder.set(filmId, seatsBySession);
-      }
-    } catch (error) {
-      for (const [filmId, seatsBySession] of takedOrder) {
-        await this.filmsService.returnSeats(filmId, seatsBySession);
-      }
-      throw error;
-    }
+    // const takedOrder = new Map<string, Map<string, Set<string>>>();
+    // try {
+    //   for (const [filmId, seatsBySession] of order) {
+    //     await this.filmsService.takeSeats(filmId, seatsBySession);
+    //     takedOrder.set(filmId, seatsBySession);
+    //   }
+    // } catch (error) {
+    //   for (const [filmId, seatsBySession] of takedOrder) {
+    //     await this.filmsService.returnSeats(filmId, seatsBySession);
+    //   }
+    //   throw error;
+    // }
 
     const tickets = dto.tickets.map((order) => {
       return {
