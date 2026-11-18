@@ -20,17 +20,17 @@ export class FilmsService {
     return schedule;
   }
 
-  // async takeSeats(
-  //   filmId: string,
-  //   seatsBySession: Map<string, Set<string>>,
-  // ): Promise<void> {
-  //   return this.filmsRepository.takeSeats(filmId, seatsBySession);
-  // }
+  async takeSeats(
+    filmId: string,
+    seatsBySession: Map<string, Set<string>>,
+  ): Promise<void> {
+    return this.filmsRepository.takeSeats(filmId, seatsBySession);
+  }
 
-  // async returnSeats(
-  //   filmId: string,
-  //   seatsBySession: Map<string, Set<string>>,
-  // ): Promise<void> {
-  //   return this.filmsRepository.returnSeats(filmId, seatsBySession);
-  // }
+  async returnSeats(
+    filmId: string,
+    seatsBySession: Map<string, Set<string>>,
+  ): Promise<void> {
+    return this.filmsRepository.returnSeats(filmId, seatsBySession);
+  }
 }
