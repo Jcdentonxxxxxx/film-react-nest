@@ -4,7 +4,13 @@ import { configProvider } from './app.config.provider';
 
 @Global()
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true, cache: true })],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      cache: true,
+      expandVariables: true,
+    }),
+  ],
   providers: [configProvider],
   exports: [configProvider],
 })
