@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigCustomModule } from '../config/config.module';
-import { AppConfig } from '../config/app.config.provider';
+import { AppConfig } from '../config/app.config.factory';
 import { Film } from './entities/film.entity';
 import { Schedule } from './entities/schedule.entity';
 
