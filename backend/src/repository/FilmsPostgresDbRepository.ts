@@ -26,21 +26,12 @@ export class FilmsPostgresDbRepository implements FilmsRepository {
     private readonly dataSource: DataSource,
   ) {}
 
-  private parseTaken(raw: string | null | undefined): string[] {
-    if (!raw) return [];
-    return raw.split(',');
-  }
-
-  private serializeTaken(taken: string[]): string {
-    return taken.join(',');
-  }
-
   private mapFilm(film: Film): FilmDTO {
     return {
       id: film.id,
       rating: film.rating,
       director: film.director,
-      tags: film.tags ? film.tags.split(',') : [],
+      tags: film.tags,
       title: film.title,
       about: film.about,
       description: film.description,
@@ -57,7 +48,7 @@ export class FilmsPostgresDbRepository implements FilmsRepository {
       rows: schedule.rows,
       seats: schedule.seats,
       price: schedule.price,
-      taken: this.parseTaken(schedule.taken),
+      taken: schedule.taken,
     };
   }
 
@@ -123,7 +114,7 @@ export class FilmsPostgresDbRepository implements FilmsRepository {
       }
       for (const session of lockedSchedules) {
         const wanted = seatsBySession.get(session.id) ?? new Set<string>();
-        const taken = this.parseTaken(session.taken);
+        const taken = session.taken;
         const busy = [...wanted].filter((seat) => taken.includes(seat));
         if (busy.length) {
           throw new ConflictException(
@@ -133,9 +124,9 @@ export class FilmsPostgresDbRepository implements FilmsRepository {
       }
       for (const session of lockedSchedules) {
         const wanted = seatsBySession.get(session.id) ?? new Set<string>();
-        const merged = new Set(this.parseTaken(session.taken));
+        const merged = new Set(session.taken);
         for (const seat of wanted) merged.add(seat);
-        session.taken = this.serializeTaken([...merged]);
+        session.taken = [...merged];
       }
       await queryRunner.manager.save(lockedSchedules);
       await queryRunner.commitTransaction();
@@ -170,9 +161,7 @@ export class FilmsPostgresDbRepository implements FilmsRepository {
 
         if (!session) continue;
 
-        session.taken = this.serializeTaken(
-          this.parseTaken(session.taken).filter((seat) => !seats.has(seat)),
-        );
+        session.taken = session.taken.filter((seat) => !seats.has(seat));
         changed.push(session);
       }
 
