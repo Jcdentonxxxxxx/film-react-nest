@@ -13,7 +13,7 @@ import { ConfigCustomModule } from './config/config.module';
   imports: [
     ConfigCustomModule,
     ServeStaticModule.forRoot({
-      rootPath: path.join(__dirname, '..', 'public', 'content', 'afisha'),
+      rootPath: path.join(process.cwd(), 'public', 'content', 'afisha'),
       serveRoot: '/content/afisha',
     }),
     DatabaseModule,
