@@ -10,12 +10,19 @@ import { Schedule } from './entities/schedule.entity';
     ConfigCustomModule,
     TypeOrmModule.forRootAsync({
       inject: ['CONFIG'],
-      useFactory: (config: AppConfig) => ({
-        type: config.database.driver as 'postgres',
-        url: config.database.url,
-        entities: [Film, Schedule],
-        synchronize: false,
-      }),
+      useFactory: (config: AppConfig) => {
+        const dbUrl = new URL(config.database.url);
+        return {
+          type: 'postgres',
+          host: dbUrl.hostname,
+          port: parseInt(dbUrl.port || '5432'),
+          database: dbUrl.pathname.slice(1),
+          username: config.database.username,
+          password: config.database.password,
+          entities: [Film, Schedule],
+          synchronize: false,
+        };
+      },
     }),
     TypeOrmModule.forFeature([Film, Schedule]),
   ],
